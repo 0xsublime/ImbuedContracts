@@ -3,13 +3,13 @@ pragma solidity ^0.8.6;
 
 import "ds-test/test.sol";
 
-import "./Imbuedartcontracts.sol";
+import "./ImbuedMinterV2.sol";
 
-contract ImbuedartcontractsTest is DSTest {
-    Imbuedartcontracts imbuedartcontracts;
+contract ImbuedMinterV2Test is DSTest {
+    ImbuedMinterV2 minter;
 
     function setUp() public {
-        imbuedartcontracts = new Imbuedartcontracts();
+        minter = new ImbuedMinterV2();
     }
 
     function testFail_basic_sanity() public {
