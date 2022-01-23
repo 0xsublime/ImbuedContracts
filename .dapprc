@@ -1,6 +1,9 @@
 export DAPP_REMAPPINGS=$(cat remappings.txt)
 export DAPP_BUILD_OPTIMIZE_RUNS=20000
 
+# Test settings
+export HEVM_RPC=yes
+
 # Good for now, may need to be increased.
 export ETH_GAS=4000000 # Last test: 2970680
 

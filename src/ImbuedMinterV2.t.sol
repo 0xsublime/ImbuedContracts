@@ -12,6 +12,14 @@ contract ImbuedMinterV2Test is DSTest {
         minter = new ImbuedMinterV2();
     }
 
+    function test_accessNFT() public {
+        IImbuedNFT nft = minter.NFT();
+        string memory baseURI = nft.baseURI();
+        uint256 balance = nft.balanceOf(address(1));
+        emit log_string(baseURI);
+        emit log_uint(balance);
+    }
+
     function testFail_basic_sanity() public {
         assertTrue(false);
     }
