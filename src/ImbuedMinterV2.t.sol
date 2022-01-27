@@ -23,6 +23,19 @@ contract ImbuedMinterV2Test is DSTest {
         emit log_uint(balance);
     }
 
+    function test_adminMinorMint() public {
+        uint16 nextId = minter.nextId();
+        uint8 amount = 50; // uint8(minter.maxId() - nextId);
+        minter.adminMintAmount(address(1), amount);
+        assertEq(NFT.balanceOf(address(1)), amount);
+        assertEq(minter.nextId(), nextId + amount);
+    }
+
+    function test_adminMajorMint() public {
+        minter.adminMintSpecific(address(2), 100);
+        assertEq(NFT.ownerOf(100), address(2));
+    }
+
     function testFail_basic_sanity() public {
         assertTrue(false);
     }
