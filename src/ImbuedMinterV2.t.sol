@@ -6,10 +6,13 @@ import "ds-test/test.sol";
 import "./ImbuedMinterV2.sol";
 
 contract ImbuedMinterV2Test is DSTest {
-    ImbuedMinterV2 minter;
+    ImbuedMintV2 minter;
+    IImbuedNFT NFT;
 
     function setUp() public {
-        minter = new ImbuedMinterV2();
+        minter = new ImbuedMintV2();
+        NFT = minter.NFT();
+        NFT.setMintContract(address(minter));
     }
 
     function test_accessNFT() public {
