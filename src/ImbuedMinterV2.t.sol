@@ -52,6 +52,14 @@ contract ImbuedMinterV2Test is DSTest {
         }
     }
 
+    function testFail_mintAgain(uint8 id) public {
+        id = id % uint8(NFT.balanceOf(address(user)));
+        uint16[] memory ids = new uint16[](1);
+        ids[0] = uint16(NFT.tokenOfOwnerByIndex(address(user), id));
+        user.mint(ids);
+        user.mint(ids);
+    }
+
     // Not real tests.
 
     function test_gasCostMint() public {

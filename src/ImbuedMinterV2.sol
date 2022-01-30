@@ -80,7 +80,7 @@ contract ImbuedMintV2 is Ownable {
         uint256 nextCache = nextId;
         unchecked {
             uint256 newNext = nextCache + amount;
-            require(newNext <= maxId, "can't mint that many");
+            require(newNext - 1 <= maxId, "can't mint that many");
             for (uint256 i = 0; i < amount; i++) {
                 require((nextCache + i) % 100 != 0, "minting a major token");
                 NFT.mint(recipient, nextCache + i); // reentrancy danger. Handled by fact that same ID can't be minted twice.
