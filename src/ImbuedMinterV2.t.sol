@@ -17,7 +17,7 @@ contract ImbuedMinterV2Test is DSTest {
         minter = new ImbuedMintV2();
         NFT = minter.NFT();
         NFT.setMintContract(address(minter));
-        user = new User();
+        user = new User(minter);
         payable(user).transfer(10 ether);
         minter.adminMintAmount(address(user), 5);
         minter.setMaxWhitelistId(105);
@@ -44,28 +44,22 @@ contract ImbuedMinterV2Test is DSTest {
         assertEq(NFT.ownerOf(100), address(2));
     }
 
-    function test_gasCostMintA() public {
-        user.mintA(minter);
+    function test_mint5() public {
+        uint16 nextId = minter.nextId();
+        user.mint5();
+        for (uint256 i = 0; i < 5; i++) {
+            assertEq(address(user), NFT.ownerOf(nextId + i));
+        }
     }
 
-    function test_gasCostMintB() public {
-        user.mintB(minter);
+    // Not real tests.
+
+    function test_gasCostMint() public {
+        user.mint();
     }
 
-    function test_gasCostMintC() public {
-        user.mintC(minter);
-    }
-
-    function test_gasCostMintA5() public {
-        user.mintA5(minter);
-    }
-
-    function test_gasCostMintB5() public {
-        user.mintB5(minter);
-    }
-
-    function test_gasCostMintC5() public {
-        user.mintC5(minter);
+    function test_gasCostMint5() public {
+        user.mint5();
     }
 
     function testFail_basic_sanity() public {
@@ -79,36 +73,29 @@ contract ImbuedMinterV2Test is DSTest {
 
 contract User is ERC721Holder {
 
-    function mintA(ImbuedMintV2 minter) external {
-        minter.mintA{value: 0.05 ether * 1}(1);
+    ImbuedMintV2 minter;
+    constructor(ImbuedMintV2 _minter) {
+        minter = _minter;
     }
 
-    function mintB(ImbuedMintV2 minter) external {
-        minter.mintB{value: 0.05 ether * 1}(1);
-    }
-
-    function mintC(ImbuedMintV2 minter) external {
+    function mint() external {
         uint16[] memory ids = new uint16[](1);
         ids[0] = 101;
-        minter.mintC{value: 0.05 ether * 1}(ids);
+        mint(ids);
     }
 
-    function mintA5(ImbuedMintV2 minter) external {
-        minter.mintA{value: 0.05 ether * 5}(5);
-    }
-
-    function mintB5(ImbuedMintV2 minter) external {
-        minter.mintB{value: 0.05 ether * 5}(5);
-    }
-
-    function mintC5(ImbuedMintV2 minter) external {
+    function mint5() external {
         uint16[] memory ids = new uint16[](5);
         ids[0] = 101;
         ids[1] = 102;
         ids[2] = 103;
         ids[3] = 104;
         ids[4] = 105;
-        minter.mintC{value: 0.05 ether * 5}(ids);
+        mint(ids);
+    }
+
+    function mint(uint16[] memory tokenIds) public {
+        minter.mint{value: 0.05 ether * tokenIds.length}(tokenIds);
     }
 
     receive() external payable {}
