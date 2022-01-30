@@ -5,7 +5,7 @@ import "openzeppelin-contracts/access/Ownable.sol";
 import "./IImbuedNFT.sol";
 
 contract ImbuedMintV2 is Ownable {
-    IImbuedNFT constant public NFT = IImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
+    IImbuedNFT immutable public NFT;
 
     uint16 public maxWhiteListId = 99;
     uint16 public nextId = 101;
@@ -13,6 +13,14 @@ contract ImbuedMintV2 is Ownable {
     uint256 public whitelistPrice = 0.05 ether;
 
     mapping (uint256 => bool) public tokenid2claimed; // token ids that are claimed.
+
+    constructor(uint16 _maxWhiteListId, uint16 _startId, uint16 _maxId, uint256 _whitelistPrice, IImbuedNFT nft) {
+        maxWhiteListId = _maxWhiteListId;
+        nextId = _startId;
+        maxId = _maxId;
+        whitelistPrice = _whitelistPrice;
+        NFT = nft;
+    }
 
     /// Whitelist only mint.
     function mint(uint16[] calldata tokenIds) external payable {

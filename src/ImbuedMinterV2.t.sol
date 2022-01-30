@@ -9,13 +9,12 @@ import "openzeppelin-contracts/token/ERC721/utils/ERC721Holder.sol";
 
 contract ImbuedMinterV2Test is DSTest {
     ImbuedMintV2 minter;
-    IImbuedNFT NFT;
+    IImbuedNFT constant NFT = IImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
 
     User user;
 
     function setUp() public {
-        minter = new ImbuedMintV2();
-        NFT = minter.NFT();
+        minter = new ImbuedMintV2(105, 101, 110, 0.05 ether, NFT);
         NFT.setMintContract(address(minter));
         user = new User(minter);
         payable(user).transfer(10 ether);
