@@ -4,6 +4,15 @@ pragma solidity ^0.8.6;
 import "openzeppelin-contracts/access/Ownable.sol";
 import "./IImbuedNFT.sol";
 
+/// Minter contract of Imbued Art tokens.
+/// This contract allows any holder of an Imbued Art token (address
+/// `0x000001e1b2b5f9825f4d50bd4906aff2f298af4e`) to mint one new Imbued NFT for
+/// each they already own. The contract allows tokens of ID up to
+/// `maxWhitelistId` to mint new tokens.
+/// The price per token is `whitelistPrice`.
+/// The owner of the minter account may mint tokens at no cost (they also are
+/// priviliged to withdraw any funds deposited into the account, so this only
+/// cuts out an extra transaction).
 contract ImbuedMintV2 is Ownable {
     IImbuedNFT immutable public NFT;
 
@@ -22,7 +31,10 @@ contract ImbuedMintV2 is Ownable {
         NFT = nft;
     }
 
-    /// Whitelist only mint.
+    /// Minting using whitelisted tokens.  You pass a list of token ids under
+    /// your own, pay `whitelistPrice` * `tokenIds.length`, and receive
+    /// `tokenIds.length` newly minted tokens.
+    /// @param tokenIds a list of tokens
     function mint(uint16[] calldata tokenIds) external payable {
         uint8 amount = uint8(tokenIds.length);
         require(msg.value == amount * whitelistPrice, "wrong amount of ether sent");
@@ -42,46 +54,66 @@ contract ImbuedMintV2 is Ownable {
 
     // only owner
 
-    /// Admin can mint without paying fee, because they are allowed to withdraw anyway.
+    /// (Admin only) Admin can mint without paying fee, because they are allowed to withdraw anyway.
+    /// @param recipient what address should be sent the new token, must be an
+    ///        EOA or contract able to receive ERC721s.
+    /// @param amount the number of tokens to mint, starting with id `nextId()`.
     function adminMintAmount(address recipient, uint8 amount) external payable onlyOwner() {
         _mint(recipient, amount);
     }
 
-    /// Can mint *any* token ID. Intended foremost for minting major versions for the artworks.
+    /// (Admin only) Can mint *any* token ID. Intended foremost for minting
+    /// major versions for the artworks.
+    /// @param recipient what address should be sent the new token, must be an
+    ///        EOA or contract able to receive ERC721s.
+    /// @param tokenId which id to mint, may not be a previously minted one.
     function adminMintSpecific(address recipient, uint256 tokenId) external payable onlyOwner() {
         NFT.mint(recipient, tokenId);
     }
 
+    /// (Admin only) Set the highest token id which may be used for a whitelist mint.
+    /// @param newMaxWhitelistId the new maximum token id that is whitelisted.
     function setMaxWhitelistId(uint16 newMaxWhitelistId) external payable onlyOwner() {
         maxWhiteListId = newMaxWhitelistId;
     }
 
+    /// (Admin only) Set the next id that will be minted by whitelisters or
+    /// `adminMintAmount`.  If this id has already been minted, all minting
+    /// except `adminMintSpecific` will be impossible.
+    /// @param newNextId the next id that will be minted.
     function setNextId(uint16 newNextId) external payable onlyOwner() {
         nextId = newNextId;
     }
 
+    /// (Admin only) Set the maximum mintable ID (for whitelist minters).
+    /// @param newMaxId the new maximum id that can be whitelist minted (inclusive).
     function setMaxId(uint16 newMaxId) external payable onlyOwner() {
         maxId = newMaxId;
     }
     
+    /// (Admin only) Set the price per token for whitelisted minters
+    /// @param newPrice the new price in wei.
     function setWhitelistPrice(uint256 newPrice) external payable onlyOwner() {
         whitelistPrice = newPrice;
     }
 
+    /// (Admin only) Withdraw the entire contract balance to the recipient address.
+    /// @param recipient where to send the ether balance.
     function withdrawAll(address payable recipient) external payable onlyOwner() {
         recipient.call{value: address(this).balance}("");
     }
 
-    
+    /// (Admin only) self-destruct the minting contract.
+    /// @param recipient where to send the ether balance.
     function kill(address payable recipient) external payable onlyOwner() {
         selfdestruct(recipient);
     }
 
     // internal
 
-    // TODO: reentrancy vuln?
-    // Don't think so, because the only variable that has not yet been updated is nextId.
-    // If you try to mint again using re-entrancy, the mint itself will fail.
+    // Reentrancy protection: not needed. The only variable that has not yet
+    // been updated is nextId.  If you try to mint again using re-entrancy, the
+    // mint itself will fail.
     function _mint(address recipient, uint8 amount) internal {
         uint256 nextCache = nextId;
         unchecked {
