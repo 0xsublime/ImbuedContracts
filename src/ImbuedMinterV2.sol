@@ -13,6 +13,9 @@ import "./IImbuedNFT.sol";
 /// The owner of the minter account may mint tokens at no cost (they also are
 /// priviliged to withdraw any funds deposited into the account, so this only
 /// cuts out an extra transaction).
+/// However, note that the Imbued Art contract restricts even the admin on what can be minted:
+/// The highest tokenId that can ever be minted is 699, and an admin can't mint
+/// a token with an id that already exists.
 contract ImbuedMintV2 is Ownable {
     IImbuedNFT immutable public NFT;
 
