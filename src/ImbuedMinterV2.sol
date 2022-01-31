@@ -33,10 +33,7 @@ contract ImbuedMintV2 is Ownable {
                 require(id <= maxWhiteListId, "not a whitelisted token id");
                 require(!tokenid2claimed[id], "token already used for claim");
                 address tokenOwner = NFT.ownerOf(id);
-                require(msg.sender == tokenOwner
-                    || msg.sender == NFT.getApproved(id)
-                    || NFT.isApprovedForAll(tokenOwner, msg.sender)
-                    , "sender not allowed to manage token");
+                require(msg.sender == tokenOwner , "sender is not token owner");
                 tokenid2claimed[id] = true;
             }
         }
