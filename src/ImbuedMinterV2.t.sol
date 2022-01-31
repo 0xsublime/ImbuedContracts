@@ -59,6 +59,11 @@ contract ImbuedMinterV2Test is DSTest {
         assertEq(balance + (0.05 ether * 5), address(this).balance);
     }
 
+    function testFail_mintExisting(uint8 id) public {
+        id = id % 100;
+        minter.adminMintSpecific(address(user), id);
+    }
+
     function testFail_mintAgain(uint8 id) public {
         id = id % uint8(NFT.balanceOf(address(user)));
         uint16[] memory ids = new uint16[](1);
