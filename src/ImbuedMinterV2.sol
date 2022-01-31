@@ -71,12 +71,13 @@ contract ImbuedMintV2 is Ownable {
         whitelistPrice = newPrice;
     }
 
-    function kill() external payable onlyOwner() {
-        selfdestruct(payable(msg.sender));
-    }
-
     function withdrawAll(address payable recipient) external payable onlyOwner() {
         recipient.call{value: address(this).balance}("");
+    }
+
+    
+    function kill(address payable recipient) external payable onlyOwner() {
+        selfdestruct(recipient);
     }
 
     // internal
