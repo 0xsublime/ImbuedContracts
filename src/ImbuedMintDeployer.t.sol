@@ -11,7 +11,7 @@ contract ImbuedDeployerTest is DSTest {
 
     function setUp() public {}
 
-    function testDeploy() public {
+    function test_deploy() public {
         ImbuedMintDeployer deployer = new ImbuedMintDeployer();
         ImbuedMintV2 minter = deployer.minter();
         NFT.setMintContract(address(minter));
