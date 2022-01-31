@@ -1,6 +1,6 @@
 export DAPP_REMAPPINGS=$(cat remappings.txt)
 export DAPP_BUILD_OPTIMIZE=1
-export DAPP_BUILD_OPTIMIZE_RUNS=40
+export DAPP_BUILD_OPTIMIZE_RUNS=100
 export DAPP_TEST_FUZZ_RUNS=5
 
 # Test settings
@@ -8,7 +8,7 @@ export HEVM_RPC=yes
 export DAPP_TEST_ADDRESS=0x34eee73e731fb2a428444e2b2957c36a9b145017
 
 # Good for now, may need to be increased.
-export ETH_GAS=4000000 # Last test: 2970680
+export ETH_GAS=1000000 # Last test: 2970680
 
 # Network settings (Polygon)
 export ETH_FROM=0x34EeE73e731fB2A428444e2b2957C36A9b145017
