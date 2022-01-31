@@ -13,6 +13,11 @@ contract ImbuedMinterV2Test is DSTest {
 
     User user;
 
+    receive() external payable {
+        emit log_string("received");
+        emit log_uint(msg.value / 10e16);
+    }
+
     function setUp() public {
         minter = new ImbuedMintV2(105, 101, 110, 0.05 ether, NFT);
         NFT.setMintContract(address(minter));
@@ -49,6 +54,9 @@ contract ImbuedMinterV2Test is DSTest {
         for (uint256 i = 0; i < 5; i++) {
             assertEq(address(user), NFT.ownerOf(nextId + i));
         }
+        uint256 balance = address(this).balance;
+        minter.withdrawAll(payable(address(this)));
+        assertEq(balance + (0.05 ether * 5), address(this).balance);
     }
 
     function testFail_mintAgain(uint8 id) public {
