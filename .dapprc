@@ -1,3 +1,10 @@
+# To put in secrets.sh:
+# export MAINNET_RPC_URL=
+# export TESTNET_RPC_URL=
+# export ETHERSCAN_API_KEY=
+# export ETH_KEYSTORE=
+source secrets.sh
+
 export DAPP_REMAPPINGS=$(cat remappings.txt)
 export DAPP_BUILD_OPTIMIZE=1
 export DAPP_BUILD_OPTIMIZE_RUNS=100
@@ -5,6 +12,7 @@ export DAPP_TEST_FUZZ_RUNS=100
 
 # Test settings
 export HEVM_RPC=yes
+export ETH_RPC_URL=$MAINNET_RPC_URL # Careful, only for testing! Change this for testnet deploys.
 export DAPP_TEST_ADDRESS=0x34eee73e731fb2a428444e2b2957c36a9b145017
 
 # Good for now, may need to be increased.
@@ -15,9 +23,3 @@ export ETH_FROM=0x34EeE73e731fB2A428444e2b2957C36A9b145017
 export ETH_GAS_PRICE=200000000000 # 200 Gwei. Using EIP1559, we will still only pay base fee. Monitor network conditions when deploying.
 export ETH_PRIO_FEE=2000000000 # 2 Gwei
 export SETH_CHAIN=rinkeby
-
-# To put in secrets.sh:
-# export ETH_RPC_URL=
-# export ETHERSCAN_API_KEY=
-# export ETH_KEYSTORE=
-source secrets.sh
