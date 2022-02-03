@@ -1,5 +1,5 @@
-test_rawDeploy() (gas: 773720)
-test_deploy() (gas: 865030)
+test_rawDeploy() (gas: 770714)
+test_deploy() (gas: 862017)
 test_accessNFT() (gas: 16412)
 test_adminMajorMint() (gas: 164580)
 test_basic_sanity() (gas: 301)
