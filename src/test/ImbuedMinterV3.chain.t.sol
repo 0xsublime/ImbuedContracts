@@ -6,10 +6,13 @@ import "ds-test/test.sol";
 import "../ImbuedMinterV3.sol";
 
 import "openzeppelin-contracts/token/ERC721/utils/ERC721Holder.sol";
+import "./Cheat.sol";
 
 contract ImbuedMinterV3Test is DSTest {
     ImbuedMintV3 minter;
     IImbuedNFT constant NFT = IImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
+    CheatCodes cheat = (new Cheater()).cheat();
+    address controller = 0x34EeE73e731fB2A428444e2b2957C36A9b145017;
 
     User user;
 
@@ -20,6 +23,7 @@ contract ImbuedMinterV3Test is DSTest {
 
     function setUp() public {
         minter = new ImbuedMintV3();
+        cheat.prank(controller);
         NFT.setMintContract(address(minter));
         user = new User(minter);
         payable(user).transfer(10 ether);
