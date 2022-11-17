@@ -7,7 +7,7 @@ import "../ImbuedMinterV3.sol";
 
 import "openzeppelin-contracts/token/ERC721/utils/ERC721Holder.sol";
 
-contract ImbuedMinterV2Test is DSTest {
+contract ImbuedMinterV3Test is DSTest {
     ImbuedMintV3 minter;
     IImbuedNFT constant NFT = IImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
 
