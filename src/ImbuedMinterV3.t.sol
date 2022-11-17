@@ -19,7 +19,7 @@ contract ImbuedMinterV2Test is DSTest {
     }
 
     function setUp() public {
-        minter = new ImbuedMintV2(105, 101, 110, 0.05 ether, NFT);
+        minter = new ImbuedMintV2(NFT);
         NFT.setMintContract(address(minter));
         user = new User(minter);
         payable(user).transfer(10 ether);
