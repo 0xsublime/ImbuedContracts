@@ -30,6 +30,7 @@ contract ImbuedMintV3 is Ownable {
 
     function mint(Edition edition, uint8 amount) external payable {
         // Check payment.
+        require(mintInfos[uint(edition)].price * amount == msg.value, "Incorrect payment amount");
         _mint(msg.sender, edition, amount);
     }
 
