@@ -3,7 +3,7 @@ pragma solidity ^0.8.6;
 
 import "ds-test/test.sol";
 
-import "./ImbuedMintDeployer.sol";
+import "../ImbuedMintDeployer.sol";
 
 contract ImbuedDeployerTest is DSTest {
 

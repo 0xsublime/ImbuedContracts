@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "ds-test/test.sol";
 
-import "./ImbuedMinterV3.sol";
+import "../ImbuedMinterV3.sol";
 
 import "openzeppelin-contracts/token/ERC721/utils/ERC721Holder.sol";
 
