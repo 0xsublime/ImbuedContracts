@@ -5,30 +5,32 @@ import "openzeppelin-contracts/access/Ownable.sol";
 import "./IImbuedNFT.sol";
 
 contract ImbuedMintV3 is Ownable {
-    IImbuedNFT constant public NFT = 0x000001E1b2b5f9825f4d50bD4906aff2F298af4e;
+    IImbuedNFT constant public NFT = IImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
     IERC721 constant public metaverseMiamiTicket = IERC721(0x9B6F8932A5F75cEc3f20f91EabFD1a4e6e572C0A);
 
-    uint16 constant public lifeMaxId       = 299;
-    uint16 constant public longingMaxId    = 399;
-    uint16 constant public friendshipMaxId = 499;
-    // Order relevant variables per edition so that they are packed together,
-    // reduced sload and sstore gas costs.
-    uint16 public lifeNextId = 201;
-    uint224 public lifePrice = 0.05 ether;
 
-    uint16 public longingNextId = 301;
-    uint224 public longingPrice = 0.05 ether;
-
-    uint16 public friendshipNextId = 401;
-    uint224 public friendshipPrice = 0.05 ether;
     mapping (uint256 => bool) public miamiTicketId2claimed; // token ids that are claimed.
 
-    constructor(IImbuedNFT nft) {
-        NFT = nft;
+    enum Edition { LIFE, LONGING, FRIENDSHIP }
+    // Order relevant variables per edition so that they are packed together,
+    // reduced sload and sstore gas costs.
+    struct MintInfo {
+        uint16 nextId;
+        uint16 maxId;
+        uint224 price;
     }
 
-    function mint() external payable {
-        _mint(msg.sender, amount);
+    MintInfo[3] public mintInfos;
+
+    constructor() {
+        mintInfos[uint(Edition.LIFE      )] = MintInfo(201, 299, 0.05 ether);
+        mintInfos[uint(Edition.LONGING   )] = MintInfo(301, 399, 0.05 ether);
+        mintInfos[uint(Edition.FRIENDSHIP)] = MintInfo(461, 499, 0.05 ether); // Friendship edition is 461-499, first 2x30 reserved for Miami ticket holders.
+    }
+
+    function mint(Edition edition, uint8 amount) external payable {
+        // Check payment.
+        _mint(msg.sender, edition, amount);
     }
 
     // only owner
@@ -37,8 +39,8 @@ contract ImbuedMintV3 is Ownable {
     /// @param recipient what address should be sent the new token, must be an
     ///        EOA or contract able to receive ERC721s.
     /// @param amount the number of tokens to mint, starting with id `nextId()`.
-    function adminMintAmount(address recipient, uint8 amount) external payable onlyOwner() {
-        _mint(recipient, amount);
+    function adminMintAmount(address recipient, Edition edition, uint8 amount) external payable onlyOwner() {
+        _mint(recipient, edition, amount);
     }
 
     /// (Admin only) Can mint *any* token ID. Intended foremost for minting
@@ -64,19 +66,16 @@ contract ImbuedMintV3 is Ownable {
 
     // internal
 
-    // Reentrancy protection: not needed. The only variable that has not yet
-    // been updated is nextId.  If you try to mint again using re-entrancy, the
-    // mint itself will fail.
-    function _mint(address recipient, uint8 amount) internal {
-        uint256 nextCache = nextId;
+    // Rethink: reentrancy danger. Here we have several nextId.
+    function _mint(address recipient, Edition edition, uint8 amount) internal {
+        MintInfo memory infoCache = mintInfos[uint(edition)];
         unchecked {
-            uint256 newNext = nextCache + amount;
-            require(newNext - 1 <= maxId, "can't mint that many");
+            uint256 newNext = infoCache.nextId + amount;
+            require(newNext - 1 <= infoCache.maxId, "Minting would exceed maxId");
             for (uint256 i = 0; i < amount; i++) {
-                require((nextCache + i) % 100 != 0, "minting a major token");
-                NFT.mint(recipient, nextCache + i); // reentrancy danger. Handled by fact that same ID can't be minted twice.
+                NFT.mint(recipient, infoCache.nextId + i); // reentrancy danger. Handled by fact that same ID can't be minted twice.
             }
-            nextId = uint16(newNext);
+            mintInfos[uint(edition)].nextId = uint16(newNext);
         }
     }
 }
