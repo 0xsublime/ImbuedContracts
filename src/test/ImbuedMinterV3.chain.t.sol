@@ -14,6 +14,9 @@ contract ImbuedMinterV3Test is DSTest {
     CheatCodes cheat = (new Cheater()).cheat();
     address controller = 0x34EeE73e731fB2A428444e2b2957C36A9b145017;
 
+// TODO: Make new repo (foundry)
+// Make fuzz tests and on-chain state tests.
+// Deploy to Goerli and Polygon.
     User user;
 
     receive() external payable {
